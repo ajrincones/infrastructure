@@ -1,0 +1,7 @@
+config:
+  enabled: true
+  logLevel: info
+  logFormat: logfmt
+  serverPort: 3101
+  clients:
+    - url: http://loki-loki-distributed-gateway/loki/api/v1/push

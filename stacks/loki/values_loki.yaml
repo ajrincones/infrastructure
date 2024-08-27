@@ -1,0 +1,137 @@
+loki:
+  limits_config:
+    retention_period: 168h
+  structuredConfig:
+    ingester:
+      max_transfer_retries: 0
+      chunk_idle_period: 1h
+      chunk_target_size: 1536000
+      max_chunk_age: 1h
+    storage_config:
+      aws:
+        s3: s3://${aws_access_key_id}:${aws_secret_access_key}@${AWS_REGION}
+        bucketnames: ${s3_bucket_mame}
+      boltdb_shipper:
+        shared_store: s3
+    schema_config:
+      configs:
+        - from: 2020-09-07
+          store: boltdb-shipper
+          object_store: aws
+          schema: v11
+          index:
+            prefix: loki_index_
+            period: 24h
+gateway:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+  ingress:
+    enabled: true
+    hosts:
+     - host: loki.ccm.conexa.ai
+       paths:
+       - path: /
+         pathType: Prefix
+    annotations: 
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/group.name: zeus-private
+      alb.ingress.kubernetes.io/group.order: '2'
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/target-type: ip  
+      alb.ingress.kubernetes.io/success-codes: 200-302
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:682033490598:certificate/b0ebfe22-d5ad-4abb-9691-fd7759be71f9      
+        
+deploymentMode: Distributed
+
+ingester:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 3
+#   maxUnavailable: 2
+querier:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 3
+#   maxUnavailable: 2
+queryFrontend:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 2
+#   maxUnavailable: 1
+queryScheduler:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 2
+distributor:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 3
+#   maxUnavailable: 2
+compactor:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 1
+#   serviceAccount:
+#     # annotations: {}
+#     # automountServiceAccountToken: true
+#     create: true
+#     imagePullSecrets: []
+#     # name: null  
+indexGateway:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+#   replicas: 2
+#   maxUnavailable: 1
+
+# bloomCompactor:
+#   replicas: 0
+# bloomGateway:
+#   replicas: 0
+
+# # # Enable minio for storage
+# minio:
+#   enabled: false
+
+# # # Zero out replica counts of other deployment modes
+# backend:
+#   replicas: 0
+# read:
+#   replicas: 0
+# write:
+#   replicas: 0
+
+# singleBinary:
+#   replicas: 0
+
